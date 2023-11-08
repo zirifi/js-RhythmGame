@@ -61,13 +61,17 @@
       align-items: center;
       text-align: center;
       font-size: xx-large;
-      color : red;
+      color: red;
       opacity: 70%;
     }
   </style>
 </head>
 
 <body>
+  <audio id="bgAudio" autoplay loop>
+    <source src="audio/Cartoon-On&On.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="game-container">
     <div id="character"></div>
     <div id="background-circle"></div>
@@ -77,6 +81,10 @@
       <button onclick="gameReset()">재시작</button>
     </div>
   </div>
+  <!-- TIME : <span id="timeText">00:00</span> -->
+
+  <button onclick="pauseBackgroundMusic()">음악 일시 중지</button>
+  <button onclick="playBackgroundMusic()">음악 다시 재생</button>
 
   <script>
     const character = document.getElementById("character");
@@ -88,6 +96,20 @@
     const obstacles = [];
     let isStopped = false; // 캐릭터 멈춤 여부
     let inside = true; // 캐릭터가 원 내부에 있는지 외부에 있는지 여부
+    // let time = 0;
+
+    // 오디오 요소 가져오기
+    const bgAudio = document.getElementById("bgAudio");
+
+    // 오디오 재생
+    function playBackgroundMusic() {
+      bgAudio.play();
+    }
+
+    // 오디오 일시 중지
+    function pauseBackgroundMusic() {
+      bgAudio.pause();
+    }
 
     function onUpdate() {
       if (isStopped) {
@@ -123,7 +145,7 @@
         setTimeout(() => {
           gameContainer.removeChild(obstacle);
           obstacles.splice(obstacles.indexOf(obstacle), 1);
-        }, 1500);
+        }, 1000);
       }
 
 
@@ -147,7 +169,7 @@
         setTimeout(() => {
           gameContainer.removeChild(obstacle);
           obstacles.splice(obstacles.indexOf(obstacle), 1);
-        }, 1500);
+        }, 1000);
       }
 
     }
@@ -200,7 +222,7 @@
     // 10ms마다 캐릭터 회전 함수를 호출
     setInterval(() => {
       if (!isStopped) {
-        angle += 1; // 각도 증가
+        angle += 0.8; // 각도 증가
         const radius = inside ? 205 : 165; // 내부 또는 외부 반지름에 따라 위치 업데이트
         const radians = (angle * Math.PI) / 180; // 각도를 라디안으로 변환
         const x = centerX + radius * Math.cos(radians);
@@ -216,9 +238,22 @@
 
     // 3초마다 장애물을 생성
     if (!isStopped) {
-      setInterval(createObstacle, 2500);
-      setInterval(createObstacle2, 3500);
+      setInterval(createObstacle, 2000);
+      setInterval(createObstacle, 8000);
+      setInterval(createObstacle2, 6000);
+      setInterval(createObstacle2, 10000);
+
+      // const timeInterval = setInterval(function () {
+      // time++;
+      // const minutes = Math.floor((time % 3600) / 60); // 분 계산
+      // const seconds = time % 60; // 초 계산
+
+      // // 시간, 분, 초를 두 자릿수로 표시하는 문자열 생성
+      // const timeString = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      // timeText.text(timeString);
+      // }, 1000);
     }
+
   </script>
 </body>
 
