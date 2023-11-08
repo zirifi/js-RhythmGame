@@ -1,14 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
 
+  <style>
+    #game-container {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      border: 1px solid black;
+      background-image: url(asset/WarpTrails2.gif);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    #character {
+      width: 30px;
+      height: 30px;
+      background-color: mistyrose;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    #background-circle {
+      position: absolute;
+      width: 370px;
+      height: 370px;
+      background-color: transparent;
+      border: 2px solid white;
+      /* 원의 테두리 스타일 */
+      border-radius: 50%;
+      /* 원 모양으로 스타일 변경 */
+      top: 126px;
+      left: 128px;
+    }
+
+    .obstacle {
+      width: 20px;
+      height: 20px;
+      background-color: mediumspringgreen;
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    #gameOverScene {
+      visibility: hidden;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: gray;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: xx-large;
+      color : red;
+      opacity: 70%;
+    }
+  </style>
 </head>
+
 <body>
-    
+  <div id="game-container">
+    <div id="character"></div>
+    <div id="background-circle"></div>
+    <div id="gameOverScene">
+      Game Over
+      <br>
+      <button onclick="gameReset()">재시작</button>
+    </div>
+  </div>
+
+  <script>
+    const character = document.getElementById("character");
+    const gameContainer = document.getElementById("game-container");
+    const centerX = gameContainer.offsetWidth / 2;
+    const centerY = gameContainer.offsetHeight / 2;
+    let angle = 0;
+    const backgroundCircle = document.getElementById("background-circle");
+    const obstacles = [];
+    let isStopped = false; // 캐릭터 멈춤 여부
+    let inside = true; // 캐릭터가 원 내부에 있는지 외부에 있는지 여부
+
+    function onUpdate() {
+      if (isStopped) {
+        // 게임오버 화면 표시
+        $('#gameOverScene').css('visibility', 'visible');
+      }
+    }
+
+    function gameReset() {
+      isStopped = false;
+
+      // 게임오버 화면 없애기
+      $('#gameOverScene').css('visibility', 'hidden');
+    }
+
+
+    function createObstacle() {
+      if (!isStopped) {
+        const obstacle = document.createElement("div");
+        obstacle.classList.add("obstacle");
+        const radius = 210; // 원의 반지름
+        const randomAngle = Math.random() * 360; // 장애물을 랜덤한 각도에 배치
+        const radians = (randomAngle * Math.PI) / 180;
+        const x = centerX + radius * Math.cos(radians);
+        const y = centerY + radius * Math.sin(radians);
+
+        obstacle.style.left = x - obstacle.offsetWidth / 1 + "px";
+        obstacle.style.top = y - obstacle.offsetHeight / 1 + "px";
+
+        gameContainer.appendChild(obstacle);
+        obstacles.push(obstacle);
+
+        setTimeout(() => {
+          gameContainer.removeChild(obstacle);
+          obstacles.splice(obstacles.indexOf(obstacle), 1);
+        }, 1500);
+      }
+
+
+    }
+
+    function createObstacle2() {
+      if (!isStopped) {
+        const obstacle = document.createElement("div");
+        obstacle.classList.add("obstacle");
+        const radius = 160; // 원의 반지름
+        const randomAngle = Math.random() * 360; // 장애물을 랜덤한 각도에 배치
+        const radians = (randomAngle * Math.PI) / 180;
+        const x = centerX + radius * Math.cos(radians);
+        const y = centerY + radius * Math.sin(radians);
+
+        obstacle.style.left = x - obstacle.offsetWidth / 1 + "px";
+        obstacle.style.top = y - obstacle.offsetHeight / 1 + "px";
+
+        gameContainer.appendChild(obstacle);
+        obstacles.push(obstacle);
+        setTimeout(() => {
+          gameContainer.removeChild(obstacle);
+          obstacles.splice(obstacles.indexOf(obstacle), 1);
+        }, 1500);
+      }
+
+    }
+
+    function toggleInside() {
+      if (!isStopped) {
+
+        inside = !inside; // 내부와 외부를 토글
+
+        // 현재 위치에서 원 내부 또는 외부로 이동
+        const radius = inside ? 200 : 100; // 내부로 들어가거나 외부로 나가기
+        const radians = (angle * Math.PI) / 180; // 각도를 라디안으로 변환
+        const x = centerX + radius * Math.cos(radians);
+        const y = centerY + radius * Math.sin(radians);
+
+        character.style.left = x + "px";
+        character.style.top = y + "px";
+      }
+    }
+
+    function checkCollision() {
+      if (isStopped) return;
+
+      const characterRect = character.getBoundingClientRect();
+      obstacles.forEach((obstacle) => {
+        const obstacleRect = obstacle.getBoundingClientRect();
+
+        // 충돌 감지
+        if (
+          characterRect.left < obstacleRect.right &&
+          characterRect.right > obstacleRect.left &&
+          characterRect.top < obstacleRect.bottom &&
+          characterRect.bottom > obstacleRect.top
+        ) {
+          isStopped = true; // 충돌 시 캐릭터 멈춤
+          onUpdate();
+        }
+      });
+    }
+
+    // 스페이스바 클릭 이벤트 처리
+    $(document).keydown(function (event) {
+      if (event.keyCode === 32) { // 스페이스바 키
+        toggleInside();
+      }
+    });
+
+
+
+    // 10ms마다 캐릭터 회전 함수를 호출
+    setInterval(() => {
+      if (!isStopped) {
+        angle += 1; // 각도 증가
+        const radius = inside ? 205 : 165; // 내부 또는 외부 반지름에 따라 위치 업데이트
+        const radians = (angle * Math.PI) / 180; // 각도를 라디안으로 변환
+        const x = centerX + radius * Math.cos(radians);
+        const y = centerY + radius * Math.sin(radians);
+
+        character.style.left = x + "px";
+        character.style.top = y + "px";
+
+        checkCollision(); // 충돌 검사
+      }
+
+    }, 4);
+
+    // 3초마다 장애물을 생성
+    if (!isStopped) {
+      setInterval(createObstacle, 2500);
+      setInterval(createObstacle2, 3500);
+    }
+  </script>
 </body>
-</html>l
+
+</html>
