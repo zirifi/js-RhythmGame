@@ -84,7 +84,7 @@
   <!-- TIME : <span id="timeText">00:00</span> -->
 
   <button onclick="pauseBackgroundMusic()">음악 일시 중지</button>
-  <button onclick="playBackgroundMusic()">음악 다시 재생</button>
+  <button onclick="playBackgroundMusic()">음악 재생</button>
 
   <script>
     const character = document.getElementById("character");
@@ -145,7 +145,7 @@
         setTimeout(() => {
           gameContainer.removeChild(obstacle);
           obstacles.splice(obstacles.indexOf(obstacle), 1);
-        }, 1000);
+        }, 1500);
       }
 
 
@@ -169,7 +169,7 @@
         setTimeout(() => {
           gameContainer.removeChild(obstacle);
           obstacles.splice(obstacles.indexOf(obstacle), 1);
-        }, 1000);
+        }, 1500);
       }
 
     }
@@ -236,12 +236,12 @@
 
     }, 4);
 
-    // 3초마다 장애물을 생성
+    // 몇 초마다 장애물을 생성
     if (!isStopped) {
       setInterval(createObstacle, 2000);
-      setInterval(createObstacle, 8000);
-      setInterval(createObstacle2, 6000);
-      setInterval(createObstacle2, 10000);
+      //setInterval(createObstacle, 8000);
+      setInterval(createObstacle2, 3000);
+      //setInterval(createObstacle2, 10000);
 
       // const timeInterval = setInterval(function () {
       // time++;
